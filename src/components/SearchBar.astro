@@ -1,0 +1,92 @@
+---
+interface Props {
+  categories?: string[];
+}
+
+const { categories = [] } = Astro.props as Props;
+const normalizedCategories = categories
+  .map((category) => category.trim())
+  .filter(Boolean);
+---
+<div class="flex items-center gap-4 mb-6">
+  <div class="flex-1">
+    <label for="search-name" class="sr-only">Buscar por nombre</label>
+    <input
+      id="search-name"
+      type="search"
+      placeholder="Buscar por nombre"
+      aria-label="Buscar por nombre"
+      data-search-name
+      class="flex h-11 w-full rounded-3xl border border-input bg-background px-4 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40"
+    />
+  </div>
+
+  <div class="w-56">
+    <label for="search-category" class="sr-only">Filtrar por categoría</label>
+    <select
+      id="search-category"
+      data-search-category
+      class="h-11 w-full rounded-3xl border border-input bg-background px-3 text-sm text-foreground shadow-sm"
+    >
+      <option value="all">Todas las categorías</option>
+      {
+        normalizedCategories.map((category) => (
+          <option value={category}>{category}</option>
+        ))
+      }
+    </select>
+  </div>
+</div>
+
+<script>
+(function () {
+  const nameSelector = '[data-search-name]';
+  const categorySelector = '[data-search-category]';
+  const productCardsSelector = '[data-product-card]';
+  const noResultsSelector = '[data-no-results]';
+
+  const nameInput = () =>
+    document.querySelector(nameSelector) as HTMLInputElement | null;
+  const categorySelect = () =>
+    document.querySelector(categorySelector) as HTMLSelectElement | null;
+
+  function filterCards() {
+    const q = (nameInput()?.value || '').trim().toLowerCase();
+    const cat = (categorySelect()?.value || 'all');
+    const cards = Array.from(
+      document.querySelectorAll(productCardsSelector),
+    ) as HTMLElement[];
+    let anyVisible = false;
+    cards.forEach((card) => {
+      const name = (card.getAttribute('data-product-name') || '').toLowerCase();
+      const category = (card.getAttribute('data-product-category') || '').trim();
+      const matchesName = q === '' || name.includes(q);
+      const matchesCat = cat === 'all' || category === cat;
+      const show = matchesName && matchesCat;
+      card.style.display = show ? '' : 'none';
+      if (show) anyVisible = true;
+    });
+
+    const noResultsEl = document.querySelector(
+      noResultsSelector,
+    ) as HTMLElement | null;
+    if (noResultsEl) {
+      noResultsEl.style.display = anyVisible ? 'none' : '';
+    }
+
+    return anyVisible;
+  }
+
+  function attachListeners() {
+    const input = nameInput();
+    const select = categorySelect();
+    if (input) input.addEventListener('input', filterCards);
+    if (select) select.addEventListener('change', filterCards);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    attachListeners();
+    filterCards();
+  });
+})();
+</script>

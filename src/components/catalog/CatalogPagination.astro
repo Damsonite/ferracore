@@ -1,0 +1,80 @@
+---
+import { getPageRange } from "@/utils/helpers";
+
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  baseUrl?: string;
+  queryParams?: Record<string, string>;
+}
+
+const { currentPage, totalPages, baseUrl = "/?page=", queryParams = {} } = Astro.props;
+
+// Build query string
+const queryString =
+  Object.entries(queryParams).length > 0
+    ? "&" + new URLSearchParams(queryParams).toString()
+    : "";
+
+// Get page range for pagination display
+const pageRange = getPageRange(currentPage, totalPages);
+
+// Create URL helper
+const getPageUrl = (page: number | string) => {
+  if (page === "...") return "#";
+  return `${baseUrl}${page}${queryString}`;
+};
+---
+
+{totalPages > 1 && (
+  <nav
+    class="flex items-center justify-center gap-2 mt-12"
+    aria-label="Paginación de productos"
+  >
+    <div class="flex items-center gap-1 flex-wrap justify-center">
+      {pageRange.map((page) => {
+        const isCurrentPage = page === currentPage;
+        const isDots = page === "...";
+
+        if (isDots) {
+          return (
+            <span class="px-1 text-muted-foreground">
+              {page}
+            </span>
+          );
+        }
+
+        return (
+          <a
+            href={getPageUrl(page)}
+            aria-label={`Página ${page}`}
+            aria-current={isCurrentPage ? "page" : undefined}
+            class:list={[
+              "inline-flex items-center justify-center w-9 h-9 rounded-lg font-medium transition-colors text-sm",
+              isCurrentPage
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted hover:bg-primary/10 text-foreground hover:text-primary",
+            ]}
+          >
+            {page}
+          </a>
+        );
+      })}
+    </div>
+
+    <!-- Next button -->
+    <a
+      href={getPageUrl(currentPage + 1)}
+      aria-label="Página siguiente"
+      class:list={[
+        "inline-flex items-center justify-center px-3 py-2 rounded-lg font-medium transition-colors",
+        currentPage === totalPages
+          ? "bg-muted text-muted-foreground cursor-not-allowed"
+          : "bg-muted hover:bg-primary/10 text-foreground hover:text-primary",
+      ]}
+      class={currentPage === totalPages ? "pointer-events-none" : ""}
+    >
+      Siguiente →
+    </a>
+  </nav>
+)}

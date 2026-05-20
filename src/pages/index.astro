@@ -1,5 +1,101 @@
 ---
-import BaseLayout from "@layouts/BaseLayout.astro";
+import { ProductGrid } from "@/components/catalog";
+import { createServerSupabaseClient, supabase } from "@/db/supabase";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import type { Tables } from "@/types/database.types";
+
+type CatalogProduct = Tables<"products"> & {
+  category?: { id: string; name: string; slug: string } | null;
+  status?: { id: string; name: string; slug: string } | null;
+};
+
+const { data: products, error } = await supabase
+  .from("products")
+  .select(
+    `
+      *,
+      category:category_id (id, name, slug),
+      status:status_id (id, name, slug)
+    `,
+  )
+  .eq("active", true)
+  .order("created_at", { ascending: false });
+
+const serverSupabase = createServerSupabaseClient();
+const { data: categories, error: categoriesError } = await serverSupabase
+  .from("categories")
+  .select("name")
+  .order("name", { ascending: true });
+
+const catalogProducts = (products ?? []) as CatalogProduct[];
+
+const formattedProducts = catalogProducts.map((product) => ({
+  id: String(product.id),
+  name: product.name,
+  description: product.description ?? "",
+  price: product.price,
+  stock: product.stock,
+  category: product.category?.name ?? "Sin categoría",
+  status: product.status?.name ?? "Disponible",
+  image_url: product.image_url ?? undefined,
+}));
+
+const catalogCategoryNames = (categories ?? [])
+  .map((category) => category.name?.trim() ?? "")
+  .filter(Boolean);
 ---
 
-<BaseLayout> <h1>FerraCore</h1></BaseLayout>
+<BaseLayout
+  title="Catálogo | FerraCore"
+  description="Catálogo de ferretería con productos, precios y stock."
+>
+  <div class="container-main">
+    <div>
+      <p class="text-sm font-medium uppercase tracking-[0.25em] text-primary">
+        Catalogo
+      </p>
+
+      <h1
+        class="mb-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl"
+      >
+        Productos para ferreteria
+      </h1>
+    </div>
+
+    <section aria-label="Catálogo de productos" class="space-y-4">
+      <div class="rounded-2xl border border-border bg-card p-4 sm:p-5">
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          {
+            error ? (
+              <div
+                role="alert"
+                class="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-800"
+              >
+                <strong>No se pudieron cargar los productos.</strong>
+                <div class="mt-1 text-sm">{error.message}</div>
+              </div>
+            ) : (
+              <>
+                {categoriesError && (
+                  <div
+                    role="alert"
+                    class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900"
+                  >
+                    <strong>No se pudieron cargar las categorias.</strong>
+                    <div class="mt-1 text-sm">{categoriesError.message}</div>
+                  </div>
+                )}
+                <ProductGrid
+                  products={formattedProducts}
+                  categories={catalogCategoryNames}
+                />
+              </>
+            )
+          }
+        </div>
+      </div>
+    </section>
+  </div></BaseLayout
+>

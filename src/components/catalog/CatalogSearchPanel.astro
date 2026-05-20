@@ -1,0 +1,50 @@
+---
+interface Props {
+  categoryCount: number;
+  statusCount: number;
+  minPriceLabel: string;
+  maxPriceLabel: string;
+}
+
+const { categoryCount, statusCount, minPriceLabel, maxPriceLabel } =
+  Astro.props as Props;
+---
+
+<div class="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+  <div>
+    <label for="catalog-search" class="mb-3 block text-sm font-medium text-foreground">
+      Buscar productos
+    </label>
+    <input
+      id="catalog-search"
+      type="search"
+      placeholder="Buscar por nombre, categoria o descripcion"
+      aria-label="Buscar productos del catalogo"
+      class="flex h-11 w-full rounded-3xl border border-input bg-background px-4 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50"
+      data-catalog-search
+    />
+  </div>
+
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div
+      class="rounded-2xl border border-border bg-background px-4 py-3 text-sm text-muted-foreground"
+    >
+      {categoryCount} categorias
+    </div>
+    <div
+      class="rounded-2xl border border-border bg-background px-4 py-3 text-sm text-muted-foreground"
+    >
+      {statusCount} estados
+    </div>
+    <div
+      class="rounded-2xl border border-border bg-background px-4 py-3 text-sm text-muted-foreground"
+    >
+      Precio minimo {minPriceLabel}
+    </div>
+    <div
+      class="rounded-2xl border border-border bg-background px-4 py-3 text-sm text-muted-foreground"
+    >
+      Precio maximo {maxPriceLabel}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,264 @@
+---
+import AdminLayout from "@/layouts/AdminLayout.astro";
+---
+
+<AdminLayout
+  title="Admin | FerraCore"
+  description="Gestión del catálogo y las imágenes de productos."
+>
+  <section id="admin-app" class="hidden">
+    <div class="admin-container">
+      <header class="admin-header">
+        <div>
+          <p
+            class="text-xs font-semibold uppercase tracking-[0.25em] text-primary"
+          >
+            Portal admin
+          </p>
+          <h1 class="admin-title mt-2">Catálogo de productos</h1>
+          <p class="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Crea, edita y elimina productos. Las imágenes se guardan en Supabase
+            Storage.
+          </p>
+        </div>
+
+        <div class="admin-actions">
+          <a href="/" class="btn btn-secondary btn-sm">Ver catálogo</a>
+          <button
+            id="logout-button"
+            class="btn btn-danger btn-sm"
+            type="button"
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
+
+      <div
+        id="admin-message"
+        class="mb-6 hidden rounded-xl border px-4 py-3 text-sm"
+        role="alert"
+        aria-live="polite"
+      >
+      </div>
+
+      <div class="grid gap-6 [grid-template-columns:1.3fr_0.9fr]">
+        <section class="card-lg space-y-5">
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-semibold text-foreground">Productos</h2>
+              <p class="text-sm text-muted-foreground">
+                Lista sincronizada con Supabase.
+              </p>
+            </div>
+
+            <div class="text-right text-sm text-muted-foreground">
+              <p>Total</p>
+              <p
+                id="total-products"
+                class="text-xl font-semibold text-foreground"
+              >
+                0
+              </p>
+            </div>
+          </div>
+
+          <div class="grid gap-3 grid-cols-3">
+            <div class="rounded-2xl border border-border bg-muted/40 p-4">
+              <p
+                class="text-xs uppercase tracking-[0.2em] text-muted-foreground"
+              >
+                Activos
+              </p>
+              <p
+                id="active-products"
+                class="mt-2 text-2xl font-semibold text-foreground"
+              >
+                0
+              </p>
+            </div>
+            <div class="rounded-2xl border border-border bg-muted/40 p-4">
+              <p
+                class="text-xs uppercase tracking-[0.2em] text-muted-foreground"
+              >
+                Bajo stock
+              </p>
+              <p
+                id="low-stock-products"
+                class="mt-2 text-2xl font-semibold text-foreground"
+              >
+                0
+              </p>
+            </div>
+            <div class="rounded-2xl border border-border bg-muted/40 p-4">
+              <p
+                class="text-xs uppercase tracking-[0.2em] text-muted-foreground"
+              >
+                Imagenes
+              </p>
+              <p
+                id="image-products"
+                class="mt-2 text-2xl font-semibold text-foreground"
+              >
+                0
+              </p>
+            </div>
+          </div>
+
+          <div id="products-list" class="space-y-4"></div>
+        </section>
+
+        <aside class="card-lg sticky top-6 h-fit">
+          <div class="mb-5 border-b border-border pb-4">
+            <p
+              id="form-kicker"
+              class="text-xs font-semibold uppercase tracking-[0.25em] text-primary"
+            >
+              Nuevo producto
+            </p>
+            <h2
+              id="form-title"
+              class="mt-2 text-xl font-semibold text-foreground"
+            >
+              Crear producto
+            </h2>
+            <p id="form-description" class="mt-2 text-sm text-muted-foreground">
+              Completa el formulario para guardar el producto en el catálogo.
+            </p>
+          </div>
+
+          <form id="product-form" class="space-y-4">
+            <input id="product-id" type="hidden" name="id" />
+            <input id="product-image-url" type="hidden" name="image_url" />
+
+            <div class="form-group">
+              <label class="form-label" for="product-name">Nombre</label>
+              <input
+                id="product-name"
+                name="name"
+                type="text"
+                maxlength="100"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="product-description"
+                >Descripción</label
+              >
+              <textarea
+                id="product-description"
+                name="description"
+                rows="5"
+                maxlength="500"
+                required></textarea>
+            </div>
+
+            <div class="grid gap-4 grid-cols-2">
+              <div class="form-group">
+                <label class="form-label" for="product-price">Precio</label>
+                <input
+                  id="product-price"
+                  name="price"
+                  type="number"
+                  min="0"
+                  step="1"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="product-stock">Stock</label>
+                <input
+                  id="product-stock"
+                  name="stock"
+                  type="number"
+                  min="0"
+                  step="1"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="grid gap-4 grid-cols-2">
+              <div class="form-group">
+                <label class="form-label" for="product-category"
+                  >Categoría</label
+                >
+                <select id="product-category" name="category_id" required>
+                  <option value="">Cargando...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="product-status">Estado</label>
+                <select id="product-status" name="status_id" required>
+                  <option value="">Cargando...</option>
+                </select>
+              </div>
+            </div>
+
+            <label
+              class="flex items-center gap-3 rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground"
+            >
+              <input
+                id="product-active"
+                name="active"
+                type="checkbox"
+                checked
+                class="size-4 rounded border-border text-primary focus:ring-primary"
+              />
+              Producto activo en el catálogo
+            </label>
+
+            <div
+              class="space-y-3 rounded-2xl border border-dashed border-border bg-muted/20 p-4"
+            >
+              <div>
+                <label class="form-label" for="product-image">Imagen</label>
+                <p class="mt-1 text-xs text-muted-foreground">
+                  JPG, PNG o WebP. Máximo 5MB.
+                </p>
+              </div>
+              <input
+                id="product-image"
+                name="image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+              />
+              <div
+                id="image-preview"
+                class="hidden overflow-hidden rounded-2xl border border-border bg-background"
+              >
+                <img
+                  id="image-preview-img"
+                  alt="Vista previa del producto"
+                  class="h-48 w-full object-cover"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 pt-2">
+              <button
+                id="save-product"
+                type="submit"
+                class="btn btn-primary btn-md"
+              >
+                Guardar
+              </button>
+              <button
+                id="reset-form"
+                type="button"
+                class="btn btn-secondary btn-md"
+              >
+                Limpiar
+              </button>
+            </div>
+          </form>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="/src/scripts/admin-dashboard.ts"></script>
+</AdminLayout>

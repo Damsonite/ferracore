@@ -1,0 +1,80 @@
+---
+import SearchBar from "@/components/SearchBar.astro";
+import ProductCard from "./ProductCard.astro";
+
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  category?: string | null;
+  status?: string | null;
+  image_url?: string | null;
+  category_id?: string;
+  status_id?: string;
+}
+
+interface Props {
+  products: Product[];
+  loading?: boolean;
+  error?: string | null;
+  categories?: string[];
+}
+
+const {
+  products = [],
+  loading = false,
+  error = null,
+  categories = [],
+} = Astro.props;
+---
+
+<div>
+  <SearchBar categories={categories} />
+  <div
+    data-no-results
+    class="col-span-full rounded-lg border border-border bg-muted/50 p-8 text-center"
+    style="display:none"
+  >
+    No se encontraron productos
+  </div>
+
+  <div
+    class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-max"
+  >
+    {
+      error && (
+        <div class="col-span-full rounded-lg border border-red-200 bg-red-50 p-4">
+          <p class="text-sm font-medium text-red-800">
+            Error cargando productos
+          </p>
+          <p class="text-sm text-red-700 mt-1">{error}</p>
+        </div>
+      )
+    }
+
+    {
+      !error && products.length === 0 && !loading && (
+        <div class="col-span-full rounded-lg border border-border bg-muted/50 p-8 text-center">
+          <p class="text-muted-foreground">No hay productos disponibles</p>
+        </div>
+      )
+    }
+
+    {
+      products.map((product) => (
+        <ProductCard
+          id={product.id}
+          name={product.name}
+          description={product.description}
+          price={product.price}
+          stock={product.stock}
+          category={product.category || "Sin categoría"}
+          status={product.status || "Disponible"}
+          imageUrl={product.image_url || undefined}
+        />
+      ))
+    }
+  </div>
+</div>

@@ -1,5 +1,4 @@
 ---
-import { Header } from "@/components/shared";
 import "@/styles/components.css";
 import "@/styles/global.css";
 
@@ -9,8 +8,8 @@ interface Props {
 }
 
 const {
-  title = "FerraCore",
-  description = "Catálogo de productos para ferretería.",
+  title = "Autenticación | FerraCore",
+  description = "Acceso al panel de administración",
 } = Astro.props as Props;
 ---
 
@@ -24,10 +23,8 @@ const {
     <meta name="description" content={description} />
     <title>{title}</title>
   </head>
-  <body>
-    <Header />
-
-    <main>
+  <body class="flex items-center justify-center min-h-screen">
+    <main class="w-full max-w-md px-4">
       <slot />
     </main>
   </body>
