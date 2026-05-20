@@ -2,6 +2,8 @@
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders } from "astro/config";
 
+import cloudflare from "@astrojs/cloudflare";
+
 // https://astro.build/config
 export default defineConfig({
   // Static output matches the current site structure and Astro's default mode.
@@ -24,4 +26,6 @@ export default defineConfig({
       external: ["@supabase/supabase-js"],
     },
   },
+
+  adapter: cloudflare(),
 });
