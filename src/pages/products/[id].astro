@@ -4,35 +4,41 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import type { Tables } from "@/types/database.types";
 import { formatPrice, formatStock } from "@/utils/formatters";
 
+export const prerender = false;
+
 type ProductDetail = Tables<"products"> & {
   category?: { id: string; name: string; slug: string } | null;
   status?: { id: string; name: string; slug: string } | null;
 };
 
-export async function getStaticPaths() {
-  const { data: products, error } = await supabase
-    .from("products")
-    .select(
-      `
-        *,
-        category:category_id (id, name, slug),
-        status:status_id (id, name, slug)
-      `,
-    )
-    .eq("active", true)
-    .order("created_at", { ascending: false });
+const productId = Astro.params.id;
 
-  if (error) {
-    throw new Error(`No se pudieron cargar los productos: ${error.message}`);
-  }
-
-  return (products ?? []).map((product) => ({
-    params: { id: String(product.id) },
-    props: { product: product as ProductDetail },
-  }));
+if (!productId) {
+  return Astro.redirect("/");
 }
 
-const { product } = Astro.props as { product: ProductDetail };
+const parsedProductId = Number(productId);
+
+if (!Number.isInteger(parsedProductId) || parsedProductId <= 0) {
+  return Astro.redirect("/");
+}
+
+const { data: product, error } = await supabase
+  .from("products")
+  .select(
+    `
+      *,
+      category:category_id (id, name, slug),
+      status:status_id (id, name, slug)
+    `,
+  )
+  .eq("id", parsedProductId)
+  .eq("active", true)
+  .maybeSingle<ProductDetail>();
+
+if (error || !product) {
+  return Astro.redirect("/");
+}
 
 const stockLabel = formatStock(product.stock);
 const isOutOfStock = product.stock === 0;
@@ -56,10 +62,10 @@ const pageDescription = product.description
     >
       <section class="space-y-4">
         <div
-          class="overflow-hidden rounded-[2rem] border border-border bg-card shadow-sm"
+          class="overflow-hidden rounded-4xl border border-border bg-card shadow-sm"
         >
           <div
-            class="aspect-[4/3] bg-linear-to-br from-amber-50 via-stone-50 to-orange-100 sm:aspect-[16/10]"
+            class="aspect-4/3 bg-linear-to-br from-amber-50 via-stone-50 to-orange-100 sm:aspect-16/10"
           >
             {
               product.image_url ? (
@@ -127,7 +133,7 @@ const pageDescription = product.description
       </section>
 
       <aside
-        class="lg:sticky lg:top-24 h-fit space-y-4 rounded-[2rem] border border-border bg-card p-6 shadow-sm"
+        class="lg:sticky lg:top-24 h-fit space-y-4 rounded-4xl border border-border bg-card p-6 shadow-sm"
       >
         <div class="flex items-start justify-between gap-4">
           <div>
@@ -186,7 +192,7 @@ const pageDescription = product.description
           <p class="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Identificador
           </p>
-          <p class="mt-2 break-words text-sm font-medium text-foreground">
+          <p class="mt-2 wrap-break-word text-sm font-medium text-foreground">
             #{product.id}
           </p>
         </div>

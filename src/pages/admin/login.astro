@@ -1,14 +1,14 @@
 ---
 import AuthLayout from "@/layouts/AuthLayout.astro";
+
+export const prerender = true;
 ---
 
 <AuthLayout
   title="Acceso admin | FerraCore"
   description="Inicia sesión para administrar el catálogo."
 >
-  <section
-    class="rounded-[2rem] border border-border bg-card p-6 shadow-sm sm:p-8"
-  >
+  <section class="rounded-4xlborder border-border bg-card p-6 shadow-sm sm:p-8">
     <div class="mb-8">
       <p class="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
         FerraCore Admin
@@ -64,5 +64,7 @@ import AuthLayout from "@/layouts/AuthLayout.astro";
     </form>
   </section>
 
-  <script type="module" src="/src/scripts/admin-login.ts"></script>
+  <script>
+    import "@/scripts/admin-login";
+  </script>
 </AuthLayout>

@@ -4,6 +4,8 @@ import { createServerSupabaseClient, supabase } from "@/db/supabase";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import type { Tables } from "@/types/database.types";
 
+export const prerender = false;
+
 type CatalogProduct = Tables<"products"> & {
   category?: { id: string; name: string; slug: string } | null;
   status?: { id: string; name: string; slug: string } | null;
