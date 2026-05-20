@@ -1,43 +1,55 @@
-# Astro Starter Kit: Minimal
+# Ferracore
+
+Ferracore es una plantilla académica de un e-commerce para una ferretería. El proyecto está pensado para practicar la construcción de un catálogo de productos, navegación por categorías y un panel de administración sencillo con Astro.
+
+## Requisitos
+
+- Node.js 22.12 o superior
+- pnpm
+
+## Ejecución
+
+Instala las dependencias desde la raíz del proyecto:
 
 ```sh
-pnpm create astro@latest -- --template minimal
+pnpm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Inicia el entorno de desarrollo:
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+pnpm dev
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Astro levantará la aplicación en `http://localhost:4321`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Comandos útiles
 
-Any static assets, like images, can be placed in the `public/` directory.
+```sh
+pnpm build
+```
 
-## 🧞 Commands
+Genera la versión de producción en `./dist/`.
 
-All commands are run from the root of the project, from a terminal:
+```sh
+pnpm preview
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+Previsualiza la versión generada antes de desplegar.
 
-## 👀 Want to learn more?
+```sh
+pnpm astro -- --help
+```
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Muestra la ayuda de la CLI de Astro.
+
+## Estructura general
+
+- `src/pages/`: rutas y páginas del sitio.
+- `src/components/`: componentes reutilizables.
+- `src/layouts/`: plantillas de página.
+- `public/`: recursos estáticos.
+
+## Nota del proyecto
+
+Este repositorio se usa como base para un proyecto académico, por lo que el enfoque está en la presentación del catálogo, la experiencia de navegación y la simulación de funcionalidades propias de una tienda de ferretería.
