@@ -1,6 +1,6 @@
 # Ferracore
 
-Ferracore es una plantilla académica de un e-commerce para una ferretería. El proyecto está pensado para practicar la construcción de un catálogo de productos, navegación por categorías y un panel de administración sencillo con Astro.
+Ferracore es una plantilla para un e-commerce basado en una ferretería. Es un proyecto académico que está pensado para practicar la construcción de un catálogo de productos, navegación por categorías y un panel de administración sencillo con Astro.
 
 ## Requisitos
 
